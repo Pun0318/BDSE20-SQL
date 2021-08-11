@@ -1,0 +1,48 @@
+import os,json
+import pymysql
+# 資料庫連線
+connection = pymysql.connect(
+    host = 'localhost',
+    user = 'root',
+    password = 'P@ssw0rd',
+    database = 'moviedb',
+    charset = 'utf8mb4',
+    cursorclass = pymysql.cursors.DictCursor
+)
+
+cursor = connection.cursor()
+
+def saveDB():
+    try:
+        # 開啟 json 檔案
+        fp = open("testresult.json", "r", encoding='utf-8')
+
+        #取得 json 字串
+        strJson = fp.read()
+
+        # 關閉檔案
+        fp.close()
+
+        # 將 json 轉成 list (裡面是 dict 集合)
+        listResult = json.loads(strJson)
+        
+                                                      
+        sql = "INSERT INTO `moviedata` (`movie_title`,`belongs_to_collection`,`movie_popularity`,`movie_releasedate`,`movie_runtime`,`movie_budget`,`movie_revenue`,`movie_imdb_id`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+        #while迴圈，抓取每筆資料
+        #belongs_to_collection資料型態為dict，需確認movie有無belongs_to_collection，並將有或無改為boolean值，尚未解決
+        i=0
+        while i < len(listResult):
+            cursor.execute(
+                sql
+                 ,(listResult[i]['original_title'],i,listResult[i]['popularity'],listResult[i]['release_date'],listResult[i]['runtime'],listResult[i]['budget'],listResult[i]['revenue'],listResult[i]['imdb_id'])
+            )
+            i+=1
+        
+        connection.commit()
+    except Exception as e:
+        # 回滾
+        connection.rollback()
+        print("SQL 執行失敗")
+        print(e)
+if __name__ == "__main__":
+    saveDB()
