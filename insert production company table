@@ -21,7 +21,7 @@ def saveDB():
 
         # query 模板
         sql = "INSERT INTO `productioncompany` \
-                (`id`,`pc_name`, `pc_country`) \
+                (`pc_id`,`pc_name`, `pc_country`) \
                 VALUES (%s, %s, %s)"
 
         for itm in listResult:
