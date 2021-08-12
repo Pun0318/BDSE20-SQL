@@ -1,0 +1,45 @@
+import os,json
+import pymysql
+# 資料庫連線
+connection = pymysql.connect(
+    host = 'localhost',
+    user = 'root',
+    password = 'P@ssw0rd',
+    database = 'moviedb',
+    charset = 'utf8mb4',
+    cursorclass = pymysql.cursors.DictCursor
+)
+
+cursor = connection.cursor()
+
+def saveDB():
+    try:
+        # 開啟 .json 讀完即關閉
+        with open('testresult.json', 'r', encoding='utf-8') as fp:
+            strJSON = fp.read()
+            listResult = json.loads(strJSON)
+
+        # query 模板
+        sql = "INSERT INTO `productioncompany` \
+                (`pc_name`, `pc_country`) \
+                VALUES (%s, %s)"
+
+        for itm in listResult:
+            #將每一個production_companies內容列為list
+            list1=itm['production_companies']
+            for itm1 in list1:
+                #取出'name'、'origin_country'值寫入SQL，此種寫法會將每間公司各自帶入，無法顯示多家公司共同製作的電影
+                cursor.execute(sql, (
+                        itm1['name'],
+                        itm1['origin_country'],
+                        ))
+
+        connection.commit()
+
+    except Exception as e:
+        # 回滾
+        connection.rollback()
+        print("SQL 執行失敗")
+        print(e)
+if __name__ == "__main__":
+    saveDB()
