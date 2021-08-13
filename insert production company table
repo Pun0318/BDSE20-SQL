@@ -21,18 +21,18 @@ def saveDB():
 
         # query 模板
         sql = "INSERT INTO `productioncompany` \
-                (`pc_id`,`pc_name`, `pc_country`) \
-                VALUES (%s, %s, %s)"
+                (`pc_id`, `movie_title`, `pc_name`, `pc_country`) \
+                VALUES (%s, %s, %s, %s)"
 
         for itm in listResult:
-            #將每一個production_companies內容列為list
             list1=itm['production_companies']
             for itm1 in list1:
-                #取出'name'、'origin_country'值寫入SQL，此種寫法會將每間公司各自帶入，無法顯示多家公司共同製作的電影
+             #取出'name'、'origin_country'值寫入SQL,利用title區分各公司分別為哪部電影的製作商
                 cursor.execute(sql, (
                         itm1['id'],
+                        itm['original_title'],
                         itm1['name'],
-                        itm1['origin_country'],
+                        itm1['origin_country']
                         ))
 
         connection.commit()
